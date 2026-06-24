@@ -50,11 +50,9 @@ Then I added two subnets, deleting the default one Azure tries to create automat
 
 **Review + create**, confirmed it passed validation, then **Create**. Once it deployed I went to the resource and checked over the address space and subnets to make sure everything matched what I'd configured.
 
-`[ADD SCREENSHOT HERE]`
+<img width="726" height="770" alt="image" src="https://github.com/user-attachments/assets/702108a7-9886-419f-b606-55be8b9a7d06" />
 
 From the **Automation** section, I used **Export template** to generate a template based on this exact network, then downloaded both the Template and Parameters JSON files — I'd need these for the next task to recreate a similar setup for Manufacturing.
-
-`[ADD SCREENSHOT HERE]`
 
 ---
 
@@ -73,15 +71,11 @@ Read back through the whole file afterward to double check nothing got missed, t
 
 I made the matching edit on `parameters.json` — just the one occurrence of `CoreServicesVnet` swapped to `ManufacturingVnet` — and saved that too.
 
-`[ADD SCREENSHOT HERE]`
-
 To deploy: searched for **Deploy a custom template**, picked **Build your own template in the editor**, loaded the edited `template.json`, then loaded the edited `parameters.json` under **Edit parameters**. Confirmed the resource group was still `az104-rg4`, then **Review + create** → **Create**.
 
 Once it finished deploying, I confirmed in the portal that **ManufacturingVnet** and its two subnets showed up correctly.
 
-`[ADD SCREENSHOT HERE]`
-
-> If a deployment fails partway through, some resources may have already been created successfully — worth checking for and removing those manually before retrying.
+<img width="735" height="761" alt="image" src="https://github.com/user-attachments/assets/c1bff13e-62c2-4971-b13f-e8bbf8167ebf" />
 
 ---
 
@@ -102,7 +96,7 @@ Searched for **Application security groups**, hit **Create**:
 
 **Review + create** → **Create**.
 
-`[ADD SCREENSHOT HERE]`
+<img width="801" height="341" alt="image" src="https://github.com/user-attachments/assets/75517b6c-4a6d-4d68-a94f-ab17f314bc22" />
 
 > In a real setup, you'd attach this ASG to one or more VMs — those VMs would then be the ones actually affected by the inbound rule set up next.
 
@@ -126,7 +120,7 @@ Under **Settings** → **Subnets** → **Associate**, I linked it to:
 | Virtual network | CoreServicesVnet (az104-rg4) |
 | Subnet | SharedServicesSubnet |
 
-`[ADD SCREENSHOT HERE]`
+<img width="1297" height="172" alt="image" src="https://github.com/user-attachments/assets/ada6a3c8-a027-4c24-8bba-09070fc95ece" />
 
 **Inbound rule — allow ASG traffic:**
 
@@ -145,7 +139,7 @@ Under **Inbound security rules**, the default rules only allow traffic from othe
 | Priority | 100 |
 | Name | AllowASG |
 
-`[ADD SCREENSHOT HERE]`
+<img width="504" height="761" alt="image" src="https://github.com/user-attachments/assets/92d2e4aa-c1b9-47f5-bcad-ba1b332d6ba0" />
 
 **Outbound rule — deny internet access:**
 
@@ -164,7 +158,7 @@ The default **AllowInternetOutBound** rule sits at priority 65001 and can't be d
 | Priority | 4096 |
 | Name | DenyInternetOutbound |
 
-`[ADD SCREENSHOT HERE]`
+<img width="521" height="774" alt="image" src="https://github.com/user-attachments/assets/cde811cb-1ced-4989-9526-e3fad0881fbf" />
 
 ---
 
@@ -180,14 +174,14 @@ Searched for **DNS zones**, hit **+ Create**:
 |---|---|
 | Subscription | my subscription |
 | Resource group | az104-rg4 |
-| Name | *(custom domain — `contoso.com` is reserved, so I used a different name)* |
+| Name | salnoct.com |
 | Region | East US |
 
 **Review + create** → **Create** → **Go to resource**.
 
 On the Overview blade, Azure assigns four DNS name servers to the zone — I copied one of those addresses for testing later.
 
-`[ADD SCREENSHOT HERE]`
+<img width="447" height="126" alt="image" src="https://github.com/user-attachments/assets/dea1e815-052f-4b73-87e6-9ef5b8f9ec4a" />
 
 Under **DNS Management** → **Recordsets**, I added an A record:
 
@@ -203,7 +197,7 @@ Under **DNS Management** → **Recordsets**, I added an A record:
 
 To verify, I ran `nslookup` against the name server I'd copied earlier and confirmed the hostname resolved to the IP address I'd set.
 
-`[ADD SCREENSHOT HERE]`
+<img width="451" height="110" alt="image" src="https://github.com/user-attachments/assets/376ea606-6b06-4dc6-bf87-48cb88147f24" />
 
 **Private DNS zone:**
 
@@ -215,12 +209,12 @@ Searched for **Private DNS zones**, hit **+ Create**:
 |---|---|
 | Subscription | my subscription |
 | Resource group | az104-rg4 |
-| Name | private.contoso.com *(adjusted to match the custom domain used above)* |
+| Name | private.salnoct.com |
 | Region | East US |
 
 **Review + create** → **Create** → **Go to resource**. Unlike the public zone, there are no name server records shown here — that's expected for a private zone.
 
-`[ADD SCREENSHOT HERE]`
+<img width="687" height="556" alt="image" src="https://github.com/user-attachments/assets/1e33c616-2aae-40e9-b430-0a4496fe0a79" />
 
 Under **DNS Management** → **Virtual network links**, I linked it to the Manufacturing network:
 
@@ -241,8 +235,6 @@ From **DNS Management** → **+ Recordsets**, added a record for a VM that would
 | IP address | 10.1.1.4 |
 
 > Again, a placeholder IP here — in a real environment this would point at an actual manufacturing VM, and you'd repeat this for every machine that needs private resolution.
-
-`[ADD SCREENSHOT HERE]`
 
 ---
 
